@@ -76,10 +76,20 @@ void Classifier::runThread(FastaReader &reader)
     {
         // get a query sequence and convert to kmers
         randGen.seed(reader.numRead()); // ensure reproducible randomness
-        KmerSequence querySeq = kmerizer_.kmerize(seq);
+        KmerSequence fwdSeq = kmerizer_.kmerize(seq);
         
-        // search against database
-        searchHit hit = referenceData_.search(querySeq);
+        // and the reverse complement
+        seq.revComp();
+        KmerSequence revSeq = kmerizer_.kmerize(seq);
+        
+        // search against database using both forward and reverse sequences
+        searchHit fwdHit = referenceData_.search(fwdSeq);
+        searchHit revHit = referenceData_.search(revSeq);
+
+        // use the direction which gave the highest scoring hit
+        KmerSequence &querySeq = fwdHit.score > revHit.score ? fwdSeq : revSeq;
+        searchHit &hit = fwdHit.score > revHit.score ? fwdHit : revHit;
+
         std::pair<float, float> bootstrap = std::make_pair(0.f, 0.f);
         std::string species("AMBIGUOUS");
         std::string genus("AMBIGUOUS");

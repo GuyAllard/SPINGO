@@ -94,3 +94,47 @@ long FastaReader::numRead()
     scoped_lock lock(mutex_);
     return numRead_;
 }
+
+
+// reverse complement a sequence
+void DnaSequence::revComp()
+{
+    std::string revc;
+    revc.reserve(sequence.size());
+    for (std::string::reverse_iterator rit = sequence.rbegin(); rit != sequence.rend(); ++rit)
+    {
+        switch (*rit)
+        {
+            case 'A':
+                revc += 'T';
+                break;
+            case 'a':
+                revc += 't';
+                break;
+            case 'T':
+            case 'U':
+                revc += 'A';
+                break;
+            case 't':
+            case 'u':
+                revc += 'a';
+                break;
+            case 'G':
+                revc += 'C';
+                break;
+            case 'g':
+                revc += 'c';
+                break;
+            case 'C':
+                revc += 'G';
+                break;
+            case 'c':
+                revc += 'g';
+                break;
+            default:
+                revc += 'N';
+        }
+    }
+    
+    sequence = revc;
+}

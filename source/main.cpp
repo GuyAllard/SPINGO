@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "classifier.h"
 
 // version
-static const std::string versionString("Version 1.0");
+static const std::string versionString("Version 1.1");
 
 // platform
 #ifdef __x86_64__
