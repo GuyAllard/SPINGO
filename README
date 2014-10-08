@@ -146,7 +146,7 @@ An example command to create an index for the RDP_11.2.species.fa database with 
 
 
 ALTERNATIVE TAXONOMY:
-In addition to the taxonomy.map file which defines the two level hierarchy consisting of clostridium group and species, an alternative file named genus_spp_taxonomy.map is included in the database folder. This file can be used to create a database with a hierarchy consisting of genus and species. To do this, change to the 'SPINGO/database' folder, and execute:
+In addition to the taxonomy.map file which defines the two level hierarchy consisting of clostridium group and species, an alternative file named genus_spp_taxonomy.map is included in the database folder. This file can be used to create a database with a hierarchy consisting of genus and species. To do this, change to the 'SPINGODIR/database' folder, and execute:
     make TAX=genus_spp_taxonomy.map OUT=RDP_11.2.genus_spp.fa
 You can then use the RDP_11.2.genus_spp.fa as the database file.
 
