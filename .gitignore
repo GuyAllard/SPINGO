@@ -1,0 +1,21 @@
+# object files
+*.o
+
+# locally compiled executables
+source/spingo
+source/spindex
+
+# archives
+*.zip
+*.gz
+*.tar
+
+# sequence files
+*.fa
+*.fasta
+
+# temporary files and backups
+*.bak
+*.swp
+*~
+
