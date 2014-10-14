@@ -42,7 +42,6 @@ static const int minThreads = 1;
 static const int defaultThreads = 1;
 static const int minSubsample = 1;
 static const bool defaultWriteIndex = false;
-static const bool defaultNoHeader = false;
 
 // somewhere to store the program options
 struct ProgramOptions {
@@ -53,7 +52,6 @@ struct ProgramOptions {
     std::string dbFilename;
     std::string inputFilename;
     bool saveIndex;
-    bool noHeader;
 };
 
 
@@ -107,11 +105,6 @@ ProgramOptions parseCommandLine(int argc, char **argv)
             "write-index,w",
             po::value<bool>(&options.saveIndex)->zero_tokens()->default_value(defaultWriteIndex),
             "if specified, index will be written to disk"
-        )
-        (
-            "no-header,n",
-            po::value<bool>(&options.noHeader)->zero_tokens()->default_value(defaultNoHeader),
-            "if specified, header will not be written to results file"
         );
 
     po::positional_options_description p;
@@ -205,9 +198,6 @@ int main(int argc, char **argv)
                                options.numBootstrap,
                                options.subsample,
                                options.saveIndex);
-        
-        if (!options.noHeader)
-            std::cout << "#QUERY\tSCORE\tL1\tL1_BS\tL2\tL2_BS" << std::endl;
 
         classifier.classify(options.inputFilename);
     }
