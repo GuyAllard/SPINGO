@@ -5,6 +5,9 @@
 source/spingo
 source/spindex
 
+# cached index
+*.idx_*
+
 # archives
 *.zip
 *.gz
