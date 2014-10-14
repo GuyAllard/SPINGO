@@ -103,17 +103,17 @@ SPINGO PARAMETERS
 
 --input (-i) <path>         Location of the input file.
 
---no-header (-n)            A flag indicating that column headers should NOT be written to the output file.
-
 
 OUTPUT FORMAT
-Spingo writes output in a plain text format with 6 tab separated columns. The first line of the output file consists of the column headers. The output of the header can be supressed by using the --no-header option (see above). The column desctiptions are as follows: 
+Spingo writes output in a plain text format with tab separated columns. The column desctiptions are as follows: 
 Column 1:   QUERY   Query sequence identifier.
 Column 2:   SCORE   Similarity score.
 Column 3:   L1      Taxonomic assignment at level 1 (e.g. clostridium group).
 Column 4:   L1_BS   Bootstrap score of the level 1 assignment.
-Column 5:   L2      Taxonomic assignment at level 2 (e.g. species).
+Column 5:   L2      Taxonomic assignment at level 2 (e.g. genus).
 Column 6:   L2_BS   Bootstrap score of the level 2 assignment.
+Column 7:   L3      Taxonomic assignment at level 3 (e.g. species).
+Column 8:   L3_BS   Bootstrap score of the level 3 assignment.
 
 
 RESULTS SUMMARY
@@ -128,9 +128,10 @@ Parameters:
 
 RESULTS_FILE	            Path to the input file (the output from spingo)
 
---level (-l) <1,2>          Taxonomic level to summarize.
+--level (-l) <int>          Taxonomic level to summarize.
                             1 = Clostridium group
-                            2 = Species
+                            2 = Genus
+                            3 = Species
 
 --similarity (-s) <float>   Similarity score cutoff, in the range [0,1]. Default is 0.5.
 
@@ -146,11 +147,7 @@ An example command to create an index for the RDP_11.2.species.fa database with 
 
 
 ALTERNATIVE TAXONOMY:
-In addition to the taxonomy.map file which defines the two level hierarchy consisting of clostridium group and species, an alternative file named genus_spp_taxonomy.map is included in the database folder. This file can be used to create a database with a hierarchy consisting of genus and species. To do this, change to the 'SPINGODIR/database' folder, and execute:
-    make TAX=genus_spp_taxonomy.map OUT=RDP_11.2.genus_spp.fa
-You can then use the RDP_11.2.genus_spp.fa as the database file.
-
-It is also possible to edit the existing taxonomy.map (or make a new one) to create your own taxonomic labels, the format of this file is self explanatory.
+It is possible to edit the existing taxonomy.map (or make a new one) to create your own taxonomic labels. The format of this file is self explanatory.
 
 
 64bit or 32bit
