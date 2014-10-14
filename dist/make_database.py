@@ -79,12 +79,12 @@ def parse_args():
 def main():
     # handle command line params
     args = parse_args()
-    
+     
     # load the taxonomy dictionary
     taxonomy_map = dict()
     for line in args.taxonomy:
         line = [x.strip() for x in line.split("\t")]
-        taxonomy_map[line[0]] = (line[1], line[2])
+        taxonomy_map[line[0]] = "\t".join(line[1:])
 
     # process the file
     for record in fasta_iterator(sys.stdin):
@@ -94,7 +94,7 @@ def main():
         except KeyError:
             continue
 
-        print(">%s\t%s\t%s\n%s" % (seq_id, tax[0], tax[1], record.sequence.upper()), file=sys.stdout)
+        print(">%s\t%s\n%s" % (seq_id, tax, record.sequence.upper()), file=sys.stdout)
     
 #------------------------------------------------------------------------------
 
