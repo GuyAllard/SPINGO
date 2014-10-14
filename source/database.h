@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/bind.hpp>
 
 // increment this if the database format changes
-#define DATABASE_FILE_VERSION 0
+#define DATABASE_FILE_VERSION 1
 
 //======================================================================
 // searchHit struct
@@ -50,8 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 struct searchHit
 {
     float score;                            // similarity score
-    std::vector<unsigned int> speciesIds;   // vector of hit species ids
-    std::vector<unsigned int> genusIds;     // vector of hit genus ids
+    std::vector<std::vector<unsigned int> > annotationIds;  // annotations associated with this hit
 };
 
 
@@ -63,16 +62,15 @@ class Database
 {
 private:
     unsigned int numSequences_;                 // total number of sequences in the database
+    unsigned int numLevels_;                    // number of taxonomic levels
 
     void parseHeader(const std::string& header);// parse and store sequence header
 
     std::deque<std::vector<unsigned int> > index_; // main kmer index
     
-    std::vector<std::string> species_;          // species names
-    std::vector<unsigned int> speciesIds_;      // index to species names
-    std::vector<std::string> genera_;           // genus names
-    std::vector<unsigned int> genusIds_;        // index to genus names
-    
+    std::vector<std::string> annotations_;
+    std::vector<std::vector<unsigned int> > annotationIds_;
+   
     // serialization
     friend class boost::serialization::access;
     template<class Archive>
@@ -80,18 +78,19 @@ private:
     {
         if(version != DATABASE_FILE_VERSION)
             throw boost::archive::archive_exception(boost::archive::archive_exception::unsupported_version); 
+
         ar & numSequences_;
-        ar & species_;
-        ar & speciesIds_;
-        ar & genera_;
-        ar & genusIds_;
+        ar & numLevels_;
+        ar & annotations_;
+        ar & annotationIds_;
         ar & index_;
     }
     
     // threading
     boost::mutex mutex_;
     boost::thread_group threads_;
-    void loadThread(FastaReader &reader, const Kmerizer& kmerizer);
+    void loadThread(FastaReader& reader, const Kmerizer& kmerizer);
+    void addSequence(const KmerSequence& seq);
 
 public:
     Database() : numSequences_(0) {}
@@ -105,10 +104,10 @@ public:
 
     // search the database
     searchHit search(const KmerSequence& query);
-    
-    // convert genus/species id to actual name
-    const std::string& speciesFromId(const unsigned int id) const;
-    const std::string& genusFromId(const unsigned int id) const;
+
+    // get annotation string from id
+    const std::string& annotationFromId(const unsigned int id) const;
+    const unsigned int & numLevels() const { return numLevels_; }
 };
 
 BOOST_CLASS_VERSION(Database, DATABASE_FILE_VERSION)

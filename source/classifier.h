@@ -44,7 +44,7 @@ private:
     boost::thread_group threads_;
 
     void runThread(FastaReader &reader);
-    std::pair<float, float> getBootstrap(const KmerSequence &querySeq, RandomGen &generator, const searchHit& hit);
+    std::vector<float> getBootstrap(const KmerSequence &querySeq, RandomGen &generator, const searchHit& hit);
 
 public:
     Classifier( const std::string& dbFileName,

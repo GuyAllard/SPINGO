@@ -81,7 +81,7 @@ void Classifier::runThread(FastaReader &reader)
         // and the reverse complement
         seq.revComp();
         KmerSequence revSeq = kmerizer_.kmerize(seq);
-        
+
         // search against database using both forward and reverse sequences
         searchHit fwdHit = referenceData_.search(fwdSeq);
         searchHit revHit = referenceData_.search(revSeq);
@@ -90,79 +90,82 @@ void Classifier::runThread(FastaReader &reader)
         KmerSequence &querySeq = fwdHit.score > revHit.score ? fwdSeq : revSeq;
         searchHit &hit = fwdHit.score > revHit.score ? fwdHit : revHit;
 
-        std::pair<float, float> bootstrap = std::make_pair(0.f, 0.f);
-        std::string species("AMBIGUOUS");
-        std::string genus("AMBIGUOUS");
-        
-        // make unique list of hit genera
-        std::sort(hit.genusIds.begin(), hit.genusIds.end());
-        std::vector<unsigned int>::iterator it;
-        it = std::unique(hit.genusIds.begin(), hit.genusIds.end());
-        hit.genusIds.resize(std::distance(hit.genusIds.begin(), it));
-
-        if (hit.genusIds.size() == 1)
+        std::vector<float> bootstraps(referenceData_.numLevels(), 0.f);
+        std::vector<std::string> annotations(referenceData_.numLevels(), "AMBIGUOUS");
+       
+        // make each level annotations into a list of uniques
+        for (unsigned int i=0; i< hit.annotationIds.size(); i++)
         {
-            // unique list of hit species
-            std::sort(hit.speciesIds.begin(), hit.speciesIds.end());
-            it = std::unique(hit.speciesIds.begin(), hit.speciesIds.end());
-            hit.speciesIds.resize(std::distance(hit.speciesIds.begin(), it));
-            
-            // bootstrapping
-            if (numBootstrap_ > 0)
-                bootstrap = getBootstrap(querySeq, generator, hit);            
- 
-            // get genus and species names           
-            genus = referenceData_.genusFromId(*hit.genusIds.begin());
-            if(hit.speciesIds.size() == 1)
-                species = referenceData_.speciesFromId(*hit.speciesIds.begin());
-            else
-                bootstrap.second=0.f;
-       }
-        
+            std::sort(hit.annotationIds[i].begin(), hit.annotationIds[i].end());
+            std::vector<unsigned int>::iterator it;
+            it = std::unique(hit.annotationIds[i].begin(), hit.annotationIds[i].end());
+            hit.annotationIds[i].resize(std::distance(hit.annotationIds[i].begin(), it));
+            if (hit.annotationIds[i].size() == 1)
+                annotations[i] = referenceData_.annotationFromId(*hit.annotationIds[i].begin());
+        }
+
+        // bootstrap
+        if(numBootstrap_ > 0)
+            bootstraps = getBootstrap(querySeq, generator, hit);
+       
         // output        
         std::stringstream s;
         s << std::setprecision(2) << std::fixed;
         s << querySeq.header.substr(0, querySeq.header.find("\t")) << "\t";
         s << hit.score << "\t";
-        s << genus << "\t";
-        s << bootstrap.first << "\t";
-        s << species << "\t";
-        s << bootstrap.second << std::endl;
-       
+
+        //for(unsigned int i=0; i<bootstraps.size(); i++)
+        unsigned int i=bootstraps.size();
+        while(i--)
+        {
+            s << annotations[i] << "\t";
+            s << bootstraps[i];
+            if(i>0)
+                s <<  "\t";
+            else
+                s << std::endl;
+        }
+      
         boost::mutex::scoped_lock lock(mutex_);
         std::cout << s.str();
     }
 }
 
 // bootstrapping
-std::pair<float, float> Classifier::getBootstrap(const KmerSequence& querySeq, RandomGen &generator, const searchHit& hit)
+std::vector<float> Classifier::getBootstrap(const KmerSequence& querySeq, RandomGen &generator, const searchHit& hit)
 {
     KmerSequence bootstrap;
     std::vector<kmerSize_t>kmers = querySeq.kmers;
-    
-    float genusCount = 0;
-    float speciesCount = 0;
-    
+    std::vector<float> counts(referenceData_.numLevels(), 0.f);
     int bootstrap_size = kmers.size() / subsampleSize_;
     
-    for (unsigned int i=0; i<numBootstrap_; i++)
+    for (unsigned int bs=0; bs<numBootstrap_; bs++)
     {
         std::random_shuffle(kmers.begin(), kmers.end(), generator);
         bootstrap.kmers = std::vector<kmerSize_t>(kmers.begin(), kmers.begin() + bootstrap_size);
-        
         searchHit bsHit = referenceData_.search(bootstrap);
         
-        if (std::find(bsHit.genusIds.begin(), bsHit.genusIds.end(), *hit.genusIds.begin()) != bsHit.genusIds.end())
+        for (unsigned int i=0; i<referenceData_.numLevels(); i++)
         {
-            genusCount += static_cast<float>(std::count(bsHit.genusIds.begin(), bsHit.genusIds.end(), *hit.genusIds.begin())) / static_cast<float>(bsHit.genusIds.size());
-            if(std::find(bsHit.speciesIds.begin(), bsHit.speciesIds.end(), *hit.speciesIds.begin()) != bsHit.speciesIds.end())
-                speciesCount += static_cast<float>(std::count(bsHit.speciesIds.begin(), bsHit.speciesIds.end(), *hit.speciesIds.begin())) / static_cast<float>(bsHit.speciesIds.size());
+            if (hit.annotationIds[i].size() == 1)
+            {
+                if(std::find(bsHit.annotationIds[i].begin(), bsHit.annotationIds[i].end(), *hit.annotationIds[i].begin()) != bsHit.annotationIds[i].end())
+                {
+                    counts[i] += static_cast<float>(std::count(bsHit.annotationIds[i].begin(), bsHit.annotationIds[i].end(), *hit.annotationIds[i].begin())) / static_cast<float>(bsHit.annotationIds[i].size());
+                }
+            }
         }
-   }
+    }
 
-   return std::make_pair(genusCount   / static_cast<float>(numBootstrap_),
-                          speciesCount / static_cast<float>(numBootstrap_));
+    std::vector<float> retVec;
+    for (unsigned int i=0; i<referenceData_.numLevels(); i++)
+    {
+        retVec.push_back(counts[i] / static_cast<float>(numBootstrap_));
+    }
+
+    return retVec;
 }
+
 
 // classify sequences from queryFileName
 void Classifier::classify(const std::string& queryFileName)
