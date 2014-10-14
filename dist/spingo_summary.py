@@ -60,9 +60,9 @@ def parse_args():
                         metavar="RESULTS_FILE",
                         type=lambda x: open_input_file(parser, x))
 
-    parser.add_argument("--level", "-l", default=2,
-                        help="Level to summarize. Default=2 (species)",
-                        type=int, choices=[1,2])
+    parser.add_argument("--level", "-l", default=3,
+                        help="Level to summarize. Default=3 (species)",
+                        type=int)
 
     parser.add_argument("--similarity", "-s",
                         help="Similarity score threshold [0-1]. Default=0.5",
@@ -85,15 +85,13 @@ def main():
     
     # process command line args
     args = parse_args()
-
-    if args.level == 1:
-        bsField = 3
-        assignmentField = 2
-    else:
-        bsField = 5
-        assignmentField = 4
+    
+    if args.level <= 0:
+        sys.exit("Error: level must be greater than 0")
     
     scoreField = 1
+    assignmentField = args.level * 2
+    bsField = args.level * 2 + 1
     
     results = defaultdict(int)
     total = 0
@@ -104,8 +102,8 @@ def main():
         if fields[0][0] == "#":
             continue
 
-        if len(fields) < 6:
-            sys.exit("Input file does not appear to be a spingo results file")
+        if len(fields) < 2 + args.level * 2:
+            sys.exit("Error: number of fields is less than the specified level")
 
         total += 1
         if float(fields[bsField]) >= args.threshold or fields[assignmentField] == "AMBIGUOUS":
