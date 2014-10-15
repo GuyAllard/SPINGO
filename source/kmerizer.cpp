@@ -96,3 +96,38 @@ kmerSize_t Kmerizer::kmerIndex( const std::string& kmer ) const
 	}
     return kmerId;
 }
+
+// convert a kmer sequence into its reverse complement
+KmerSequence Kmerizer::revComp(const KmerSequence &kmerSeq) const
+{
+    KmerSequence revComp;
+    revComp.header = kmerSeq.header;
+    revComp.kmers.reserve(kmerSeq.kmers.size());
+    for(std::vector<kmerSize_t>::const_iterator it = kmerSeq.kmers.begin(); it != kmerSeq.kmers.end(); ++it)
+        revComp.kmers.push_back(revCompIndex(*it));
+    
+    return revComp;
+}
+
+
+// reverse complement a single kmer
+kmerSize_t Kmerizer::revCompIndex(const kmerSize_t &idx) const
+{
+   // early-out if the original kmer is an 'N' kmer
+   if (idx == numKmers_)
+       return idx;
+
+   kmerSize_t mask = 3;     // bitmask
+   kmerSize_t comp = ~idx;  // bitwise complement
+   kmerSize_t revC = 0;     // result
+   
+   // reverse the complemented index
+   for (unsigned int i=0; i<kmerSize_; i++)
+   {
+       revC <<= 2;          // make space for the next bit-pair
+       revC |= comp & mask; // add the bit-pair from the complement
+       comp >>= 2;          // select the next bit-pair of the complement
+   }
+
+   return revC;
+}
