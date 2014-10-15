@@ -74,7 +74,7 @@ kmerSize_t Kmerizer::kmerIndex( const std::string& kmer ) const
         {
             case 'A':
             case 'a':
-                kmerId |= 0 << i2;
+                // kmerId |= 0 << i2; // unnecessary
                 break;
             case 'C':
             case 'c':
