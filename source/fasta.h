@@ -37,7 +37,6 @@ struct DnaSequence
     std::string sequence;
 
     operator bool() const { return !header.empty() && !sequence.empty(); }
-    void revComp();
 };
 
 //======================================================================

@@ -74,13 +74,14 @@ void Classifier::runThread(FastaReader &reader)
 
     while(seq = reader.readSequence())
     {
+        // reproducible randomness
+        randGen.seed(reader.numRead());
+
         // get a query sequence and convert to kmers
-        randGen.seed(reader.numRead()); // ensure reproducible randomness
         KmerSequence fwdSeq = kmerizer_.kmerize(seq);
         
         // and the reverse complement
-        seq.revComp();
-        KmerSequence revSeq = kmerizer_.kmerize(seq);
+        KmerSequence revSeq = kmerizer_.revComp(fwdSeq);
         
         // search against database using both forward and reverse sequences
         searchHit fwdHit = referenceData_.search(fwdSeq);

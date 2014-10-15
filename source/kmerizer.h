@@ -53,6 +53,7 @@ private:
     kmerSize_t kmerSize_;
     kmerSize_t numKmers_;
     kmerSize_t kmerIndex( const std::string& kmer ) const;
+    kmerSize_t revCompIndex( const kmerSize_t& idx ) const;
 
 public:
     Kmerizer() : kmerSize_(0), numKmers_(0) {}
@@ -62,6 +63,8 @@ public:
     KmerSequence kmerize(const DnaSequence& sequence) const;
     kmerSize_t numKmers() const { return numKmers_; }
     kmerSize_t kmerSize() const { return kmerSize_; }
+
+    KmerSequence revComp(const KmerSequence &kmerSeq) const;  // reverse complement the sequence
 };
 
 #endif /* __KMERIZER_H__ */
