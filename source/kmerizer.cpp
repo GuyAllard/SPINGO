@@ -67,7 +67,7 @@ kmerSize_t Kmerizer::kmerIndex( const std::string& kmer ) const
 
     kmerSize_t kmerId = 0;
 
-	for(kmerSize_t i = 0; i < kmerSize_; i++)
+    for(kmerSize_t i = 0; i < kmerSize_; i++)
     {
         unsigned int i2 = i << 1;
         switch (kmer[i])
@@ -93,7 +93,7 @@ kmerSize_t Kmerizer::kmerIndex( const std::string& kmer ) const
             default:
                 return numKmers_; // non ACGTU base encountered
         }
-	}
+    }
     return kmerId;
 }
 
