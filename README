@@ -39,8 +39,17 @@ If the included SPINGO binaries fail to run on your system, then you will need t
 
 
 INSTALLATION:
-No installation is necessary to use SPINGO. The program can be run from within the extracted SPINGO tarball. This document will assume that you have extracted the tarball in your home directory to give a folder named '/home/your_username/spingo_1.0'.This location will be referred to from hereon in as 'SPINGODIR'.
-If you have extracted the tarball in a different location, use that path in place of 'SPINGODIR'.
+The SPINGO project is hosted on GitHib at https://GitHub.com/GuyAllard/SPINGO/
+The SPINGO source code and executables can be obtained via two different methods:
+
+Either clone the repository using git:
+    git clone https://github.com/GuyAllard/SPINGO
+
+Or download and extract the zip file using the 'Download ZIP' link of the project page.
+
+No further installation is necessary. The program can be run from within the cloned repository or from the location that the zip was extracted to.
+This document will assume that SPINGO is located in your home directory in a folder named '/home/your_username/SPINGO'. This location will be referred to from hereon in as 'SPINGODIR'.
+If you have placed SPINGO in a different location, use that path in place of 'SPINGODIR'.
 
 
 GENERATION OF SPECIES DATABASE
