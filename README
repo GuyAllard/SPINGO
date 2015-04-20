@@ -194,3 +194,13 @@ If you wish to revert to using the original pre-compiled binaries,
 from within the 'SPINGODIR/source' directory will restore the original symbolic links.
 
 
+COMPILATION ERRORS
+If you are using a recent version of the boost development libraries (specifically 1.5x), compilation of SPINGO may fail with the message:
+    undefined reference to symbol '_ZN5boost6system15system_categoryEv'
+and / or:
+    error adding symbols: DSO missing from command line
+
+In this case, compile SPINGO using the following command from within the 'SPINGODIR/source' directory:
+    make boost-fix=1
+
+

@@ -22,6 +22,10 @@ CPP = g++
 CPPFLAGS = -c -Wall
 LFLAGS = -pthread -lboost_program_options -lboost_thread -lboost_serialization
 
+ifdef boost-fix
+	LFLAGS += -lboost_system
+endif
+
 all: release links
 
 debug: CPPFLAGS += -g -DDEBUG
