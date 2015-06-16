@@ -42,23 +42,13 @@ static const int minThreads = 1;
 static const int defaultThreads = 1;
 static const int minSubsample = 1;
 static const bool defaultWriteIndex = false;
-
-// somewhere to store the program options
-struct ProgramOptions {
-    int kmerSize;
-    int numThreads;
-    int numBootstrap;
-    int subsample;
-    std::string dbFilename;
-    std::string inputFilename;
-    bool saveIndex;
-};
+static const bool defaultAmbiguousOutput = false;
 
 
 // process the command-line args
-ProgramOptions parseCommandLine(int argc, char **argv)
+ClassifierOptions parseCommandLine(int argc, char **argv)
 {
-    ProgramOptions options;
+    ClassifierOptions options;
     namespace po = boost::program_options;
     std::string title("SPINGO - SPecies level IdentificatioN of metaGenOmic amplicons.\n" + versionString + " " + archString);
     po::options_description desc("Available options");
@@ -105,6 +95,11 @@ ProgramOptions parseCommandLine(int argc, char **argv)
             "write-index,w",
             po::value<bool>(&options.saveIndex)->zero_tokens()->default_value(defaultWriteIndex),
             "if specified, index will be written to disk"
+        )
+        (
+			"ambiguous,a",
+			po::value<bool>(&options.dumpAmbiguous)->zero_tokens()->default_value(defaultAmbiguousOutput),
+			"if specified, species which lead to an ambiguous hit will be listed"
         );
 
     po::positional_options_description p;
@@ -183,7 +178,7 @@ ProgramOptions parseCommandLine(int argc, char **argv)
 int main(int argc, char **argv)
 {
     // parse command line
-    ProgramOptions options = parseCommandLine(argc, argv);
+    ClassifierOptions options = parseCommandLine(argc, argv);
     
     std::cerr << "Using " << options.numThreads << " thread" << (options.numThreads > 1 ? "s" : "");
     std::cerr << " with kmer size " << options.kmerSize;
@@ -192,13 +187,7 @@ int main(int argc, char **argv)
 
     // run the classifier
     try {
-         Classifier classifier(options.dbFilename,
-                               options.kmerSize,
-                               options.numThreads,
-                               options.numBootstrap,
-                               options.subsample,
-                               options.saveIndex);
-
+        Classifier classifier(options);
         classifier.classify(options.inputFilename);
     }
     catch (FileOpenException &e) {

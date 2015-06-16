@@ -22,21 +22,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "classifier.h"
 
 // construct the classifier
-Classifier::Classifier(const std::string& dbFileName,
-                       const unsigned int kmerSize,
-                       const unsigned int numThreads,
-                       const unsigned int numBootstrap,
-                       const unsigned int subsampleSize,
-                       const bool saveIndex)
+Classifier::Classifier(const ClassifierOptions &options )
 {
-    kmerSize_ = kmerSize;
-    numThreads_ = numThreads;
-    numBootstrap_ = numBootstrap;
-    subsampleSize_ = subsampleSize;
-    kmerizer_.setKmerSize(kmerSize);
+    kmerSize_ = options.kmerSize;
+    numThreads_ = options.numThreads;
+    numBootstrap_ = options.numBootstrap;
+    subsampleSize_ = options.subsample;
+    kmerizer_.setKmerSize(kmerSize_);
+    outputAmbiguous_ = options.dumpAmbiguous;
     
     std::stringstream s;
-    s << dbFileName << ".idx_" << kmerSize;
+    s << options.dbFilename << ".idx_" << kmerSize_;
     try {
         // load cached index
         std::ifstream ifs(s.str().c_str());
@@ -48,10 +44,10 @@ Classifier::Classifier(const std::string& dbFileName,
     }
     catch (boost::archive::archive_exception &) {
         // create index from raw sequences
-        referenceData_.load(dbFileName, kmerizer_, numThreads_);
+        referenceData_.load(options.dbFilename, kmerizer_, numThreads_);
         
         // save index for future use
-        if (saveIndex)
+        if (options.saveIndex)
         {
             std::ofstream ofs(s.str().c_str());
             boost::archive::binary_oarchive oa(ofs);
@@ -122,9 +118,24 @@ void Classifier::runThread(FastaReader &reader)
             s << annotations[i] << "\t";
             s << bootstraps[i];
             if(i>0)
-                s <<  "\t";
+            {
+				s <<  "\t";
+			}
             else
+            {
+				// dump ambiguous species
+				if (hit.annotationIds[i].size() > 1 && outputAmbiguous_)
+				{
+					s << "\t";
+					for(std::vector<unsigned int>::iterator it = hit.annotationIds[i].begin(); it != hit.annotationIds[i].end(); ++it)
+					{
+						if (it != hit.annotationIds[i].begin())
+							s << ",";
+						s << referenceData_.annotationFromId(*it);
+					}
+				}
                 s << std::endl;
+			}
         }
       
         boost::mutex::scoped_lock lock(mutex_);

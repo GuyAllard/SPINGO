@@ -30,6 +30,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fasta.h"
 #include "common.h"
 
+// configuration options
+struct ClassifierOptions {
+    int kmerSize;
+    int numThreads;
+    int numBootstrap;
+    int subsample;
+    std::string dbFilename;
+    std::string inputFilename;
+    bool saveIndex;
+    bool dumpAmbiguous;
+};
+
 class Classifier
 {
 private:
@@ -40,6 +52,8 @@ private:
     unsigned int numThreads_;
     unsigned int numBootstrap_;
     unsigned int subsampleSize_;
+    bool outputAmbiguous_;
+    
     boost::mutex mutex_;
     boost::thread_group threads_;
 
@@ -47,12 +61,7 @@ private:
     std::vector<float> getBootstrap(const KmerSequence &querySeq, RandomGen &generator, const searchHit& hit);
 
 public:
-    Classifier( const std::string& dbFileName,
-                const unsigned int kmerSize,
-                const unsigned int numThreads,
-                const unsigned int numBootstrap,
-                const unsigned int subsampleSize,
-                const bool saveIndex );
+    Classifier( const ClassifierOptions &options );
 
     void classify(const std::string &queryFileName);
 };
