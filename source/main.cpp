@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "classifier.h"
 
 // version
-static const std::string versionString("Version 1.2");
+static const std::string versionString("Version 1.3");
 
 // platform
 #ifdef __x86_64__
@@ -97,9 +97,9 @@ ClassifierOptions parseCommandLine(int argc, char **argv)
             "if specified, index will be written to disk"
         )
         (
-			"ambiguous,a",
-			po::value<bool>(&options.dumpAmbiguous)->zero_tokens()->default_value(defaultAmbiguousOutput),
-			"if specified, species which lead to an ambiguous hit will be listed"
+            "ambiguous,a",
+            po::value<bool>(&options.dumpAmbiguous)->zero_tokens()->default_value(defaultAmbiguousOutput),
+            "if specified, species which lead to an ambiguous hit will be listed"
         );
 
     po::positional_options_description p;

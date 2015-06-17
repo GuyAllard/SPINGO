@@ -119,23 +119,25 @@ void Classifier::runThread(FastaReader &reader)
             s << bootstraps[i];
             if(i>0)
             {
-				s <<  "\t";
-			}
+                s <<  "\t";
+            }
             else
             {
-				// dump ambiguous species
-				if (hit.annotationIds[i].size() > 1 && outputAmbiguous_)
-				{
-					s << "\t";
-					for(std::vector<unsigned int>::iterator it = hit.annotationIds[i].begin(); it != hit.annotationIds[i].end(); ++it)
-					{
-						if (it != hit.annotationIds[i].begin())
-							s << ",";
-						s << referenceData_.annotationFromId(*it);
-					}
-				}
+                // dump ambiguous species
+                if (hit.annotationIds[i].size() > 1 && outputAmbiguous_)
+                { 
+                    s << "\t";
+                    for(std::vector<unsigned int>::iterator it = hit.annotationIds[i].begin(); it != hit.annotationIds[i].end(); ++it)
+                    {
+                        if (it != hit.annotationIds[i].begin())
+                            s << ",";
+            
+                        s << referenceData_.annotationFromId(*it);
+                    }
+                }
+            
                 s << std::endl;
-			}
+            }
         }
       
         boost::mutex::scoped_lock lock(mutex_);
