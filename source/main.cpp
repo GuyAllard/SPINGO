@@ -35,7 +35,7 @@ static const std::string archString("(32bit)");
 // defaults
 static const int minKmerSize = 1;
 static const int maxKmerSize = 15;
-static const int defaultKmerSize = 12;
+static const int defaultKmerSize = 8;
 static const int minBootstrap = 0;
 static const int defaultBootstrap = 10;
 static const int minThreads = 1;
