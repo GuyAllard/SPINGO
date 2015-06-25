@@ -94,7 +94,7 @@ SPINGO PARAMETERS
 --version (-v)              Display the program version
 
 --kmersize (-k) <int>       Kmer size. 
-                            <int> is an integer in the range [1,15] (default=12).
+                            <int> is an integer in the range [1,15] (default=8).
 
 --bootstrap (-b) <int>      Number of bootstrap samples to use.
                             <int> is a positive integer (default=10).
@@ -155,8 +155,8 @@ RESULTS_FILE	            Path to the input file (the output from spingo)
 
 SPINDEX
 An additional program, spindex is supplied which can be used to pre-create index files before running spingo. Invoking spindex with the --help parameter will display a short list of available options. 
-An example command to create an index for the RDP_11.2.species.fa database with a kmer size of 12 and using 4 processor threads:
-    SPINGODIR/spindex -k 12 -p 4 -d SPINGODIR/database/RDP_11.2.species.fa
+An example command to create an index for the RDP_11.2.species.fa database with a kmer size of 8 and using 4 processor threads:
+    SPINGODIR/spindex -k 8 -p 4 -d SPINGODIR/database/RDP_11.2.species.fa
 
 
 ALTERNATIVE TAXONOMY:
