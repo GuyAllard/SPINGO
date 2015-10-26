@@ -106,7 +106,7 @@ def main():
             sys.exit("Error: number of fields is less than the specified level")
 
         total += 1
-        if float(fields[bsField]) >= args.threshold or fields[assignmentField] == "AMBIGUOUS":
+        if (float(fields[bsField]) >= args.threshold and float(fields[scoreField]) >= args.similarity) or fields[assignmentField] == "AMBIGUOUS":
             results[fields[assignmentField]] += 1
         else:
             results["UNCLASSIFIED"] += 1    
