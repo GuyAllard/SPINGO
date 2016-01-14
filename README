@@ -124,7 +124,7 @@ SPINGO PARAMETERS
 OUTPUT FORMAT
 Spingo writes output in a plain text format with tab separated columns. The column desctiptions are as follows: 
 Column 1:   QUERY   Query sequence identifier.
-Column 2:   SCORE   Similarity score.
+Column 2:   SCORE   Similarity score (i.e. the fraction of k-mers in the query sequence that are shared with the reference sequence).
 Column 3:   L1      Taxonomic assignment at level 1 (e.g. clostridium group).
 Column 4:   L1_BS   Bootstrap score of the level 1 assignment.
 Column 5:   L2      Taxonomic assignment at level 2 (e.g. genus).
@@ -132,7 +132,6 @@ Column 6:   L2_BS   Bootstrap score of the level 2 assignment.
 Column 7:   L3      Taxonomic assignment at level 3 (e.g. species).
 Column 8:   L3_BS   Bootstrap score of the level 3 assignment.
 Column 9:   LIST    (Optional) list of species responsible for an ambiguous assignment.
-
 
 RESULTS SUMMARY
 An additional script, spingo_summary can be found alonside spingo and spindex. This can be used to create a convenient summary of the results from a spingo run. e.g.
