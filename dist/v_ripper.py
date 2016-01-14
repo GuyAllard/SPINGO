@@ -2,7 +2,7 @@
 
 #===========================================================================
 # Program: SPINGO - SPecies level IdentificatioN of metaGenOmic amplicons.
-# File: make_database.py
+# File: v_ripper.py
 # Author: Guy Allard
 # Copyright (C) 2014  Department of Microbiology, University College Cork 
 #
