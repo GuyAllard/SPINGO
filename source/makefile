@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.        \
 
 CPP = g++
 CPPFLAGS = -c -Wall
-LFLAGS = -pthread -lboost_program_options -lboost_thread -lboost_serialization
+LFLAGS = -pthread -lboost_program_options -lboost_thread -lboost_serialization -lboost_system
 
 ifdef boost-fix
 	LFLAGS += -lboost_system
